@@ -1,0 +1,9 @@
+mixin if-ie(condition, showInNonIeBrowser)
+	- if(showInNonIeBrowser == null) showInNonIeBrowser = condition == "!IE";
+	!= condition
+	block
+	if showInNonIeBrowser
+		!= "<!-- <!"
+	else
+		!= "<!"
+	!= "[endif]-->"

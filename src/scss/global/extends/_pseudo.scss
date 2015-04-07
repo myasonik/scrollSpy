@@ -1,0 +1,24 @@
+%pseudo-before {
+	position:relative;
+	&:before {
+		content:'';
+		position:absolute;
+	}
+}
+
+%pseudo-after {
+	position:relative;
+	&:after {
+		content:'';
+		position:absolute;
+	}
+}
+
+%pseudo-both {
+	position:relative;
+	&:before,
+	&:after {
+		content:'';
+		position:absolute;
+	}
+}

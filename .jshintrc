@@ -1,0 +1,8 @@
+{
+	"immed": true,
+	"latedef": true,
+	"newcap": true,
+	"quotmark": true,
+	"esnext": true,
+	"browserify": true
+}
