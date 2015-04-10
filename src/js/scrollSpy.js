@@ -52,10 +52,21 @@ module.exports = function(options) {
 	}
 
 	function scrollToAnchor(HASH, $TARGET=$(HASH), DURATION=OPTS.scrollDuration) {
+		let destinationScroll = (1 + $TARGET.offset().top - navHeight);
+
+		if (STICKYNAV) {
+			if (!isSticky) destinationScroll -= navHeight;
+
+			if (NAVOFFSET > destinationScroll) {
+				destinationScroll += navHeight;
+			}
+		}
+
 		$SCROLL.stop().animate({
 			// We want to go to the top of the page if we're not linking to anything
-			scrollTop: (HASH === '#') ? 0 : (1 + $TARGET.offset().top - navHeight)
+			scrollTop: (HASH === '#') ? 0 : destinationScroll
 		}, DURATION);
+
 		updateHash(HASH);
 	}
 
