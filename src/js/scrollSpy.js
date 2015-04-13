@@ -39,7 +39,12 @@ module.exports = function(options) {
 		const POINT = $(getHash($(this).attr('href')));
 		if (POINT.length) return POINT;
 	});
-	const { onScrollCb, onChangeCb } = OPTS;
+	const DISABLE_SCROLL_TO_ANCHOR = OPTS.disableScrollToAnchor;
+	const { onScrollCb, onChangeCb, onClickCb } = OPTS;
+	const SCROLL_DEFAULTS = {
+		TEMP_NAV_HEIGHT: null,
+		DURATION: OPTS.scrollDuration
+	}
 
 	let NAVOFFSET;
 	let navHeight; // allow changes of height on window resize or scroll
@@ -52,23 +57,35 @@ module.exports = function(options) {
 		else window.location.hash = '';
 	}
 
-	function scrollToAnchor(HASH, $TARGET=$(HASH), DURATION=OPTS.scrollDuration) {
-		let destinationScroll = (1 + $TARGET.offset().top - navHeight);
+	function scroll(LOCATION, DURATION) {
+		$SCROLL.stop().animate({
+			scrollTop: LOCATION
+		}, DURATION);
+	}
 
-		if (STICKYNAV) {
-			if (!isSticky) destinationScroll -= navHeight;
+	function scrollToAnchor(HASH, $TARGET=$(HASH), SCROLL_OPTIONS) {
+		const SCROLL_OPTS = Object.assign({}, SCROLL_DEFAULTS, SCROLL_OPTIONS);
+		const { DURATION, TEMP_NAV_HEIGHT } = SCROLL_OPTS;
+		
+		if (HASH === '#') scroll(0, DURATION)
+		else {
+			let destinationScroll = (1 + $TARGET.offset().top);
+			destinationScroll -= TEMP_NAV_HEIGHT || navHeight; 
 
-			if (NAVOFFSET > destinationScroll) {
-				destinationScroll += navHeight;
+			if (STICKYNAV) {
+				if (!isSticky) destinationScroll -= navHeight;
+				if (NAVOFFSET > destinationScroll) destinationScroll += navHeight;
 			}
+
+			scroll(destinationScroll, DURATION);
 		}
 
-		$SCROLL.stop().animate({
-			// We want to go to the top of the page if we're not linking to anything
-			scrollTop: (HASH === '#') ? 0 : destinationScroll
-		}, DURATION);
-
 		updateHash(HASH);
+	}
+
+	function cb(callBack, ...params) {
+		if (callBack) callBack(...params);
+		navHeight = $NAV.height();
 	}
 
 	$(function() {
@@ -77,21 +94,29 @@ module.exports = function(options) {
 		NAVOFFSET = STICKYNAV ? $NAV.offset().top : null;
 		navHeight = $NAV.height();
 
-		// not sure why a duration of 0 doesn't work...
-		if (HASH && navHeight !== 0) scrollToAnchor(HASH, $(HASH), 50);
+		if (HASH && navHeight !== 0) scrollToAnchor(HASH, $(HASH), {DURATION: 0});
 	});
 
 	$NAV.on('click', OPTS.navLinks, function(e) {
-		if (checkDisable(OPTS.disableScrollToAnchor)) {
-			const HASH = getHash($(this).attr('href'));
+		const NOT_DISABLED = checkDisable(DISABLE_SCROLL_TO_ANCHOR);
+		const $EL = $(this);
+
+		if (NOT_DISABLED) {
+			const HASH = getHash($EL.attr('href'));
 			const $SCROLLTARGET = $(HASH);
 
-			if ($SCROLLTARGET.length) scrollToAnchor(HASH, $SCROLLTARGET);
+
+			if ($SCROLLTARGET.length) {
+				if (STICKYNAV && !isSticky) scrollToAnchor(HASH, $SCROLLTARGET, {TEMP_NAV_HEIGHT: $NAV.height()});
+				else scrollToAnchor(HASH, $SCROLLTARGET);
+			}
 			e.preventDefault();
 		}
+
+		cb(onClickCb, $EL, !NOT_DISABLED);
 	});
 
-	$WINDOW.resize(function() { navHeight = $($NAV).height(); });
+	$WINDOW.resize(() => navHeight = $($NAV).height());
 
 	$WINDOW.scroll(function() {
 		if (checkDisable(OPTS.disableScrollSpy)) {
@@ -141,10 +166,10 @@ module.exports = function(options) {
 					}
 				}
 
-				if (onChangeCb) onChangeCb(lastId, id, scroll, navHeight);
+				cb(onChangeCb, lastId, id, scroll, navHeight);
 			}
 		}
 
-		if (onScrollCb) onScrollCb(scroll, navHeight);
+		cb(onScrollCb, scroll, navHeight);
 	});
 };

@@ -41,3 +41,4 @@ Name | Params | Description
 ---- | ------ | -----------
 onScrollCb | scrollPosition: num, navHeight: num | Fired on scroll. Not debounced or throttled. Will not be disabled by disableScrollSpy option.
 onChangeCb | lastId: string, id: string, scroll: num, navHeight: num | Fired when current section changes. LastId is the previous one. id is the new one.
+onClickCb | el: jquery obj of item clicked, disabled: whether or not disableScrollToAnchor is on | Fired when nav item is clicked
