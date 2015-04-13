@@ -17,6 +17,7 @@ const DEFAULTS = {
 };
 
 const getHash = (url) => url.startsWith('#') ? url : '#' + hash.split('#')[1];
+const get$ = (obj) => obj instanceof $ ? obj : $(obj);
 
 function checkDisable(val) {
 	return (typeof val === 'boolean' && !val) || 
@@ -27,10 +28,10 @@ module.exports = function(options) {
 	const OPTS = Object.assign({}, DEFAULTS, options);
 	const STICKYNAV = OPTS.stickyNav;
 	const STICKYCLASS = OPTS.stickyClass;
-	const $NAV = $(OPTS.nav);
+	const $NAV = get$(OPTS.nav);
 	const $NAVLINKS = $NAV.find(OPTS.navLinks);
 	const ACTIVECLASS = OPTS.activeClass;
-	const $TITLE = $(OPTS.title);
+	const $TITLE = get$(OPTS.title);
 	const DEFAULT_TITLE = $TITLE.length && $TITLE.text();
 	const $SCROLL = $('html, body');
 	const $WINDOW = $(window);
