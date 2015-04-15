@@ -1,66 +1,66 @@
 .example1 {
-	&__nav {
-		background-color: orange;
-		text-align: center;
+    &__nav {
+        background-color: orange;
+        text-align: center;
 
-		&.is-sticky {
-			position: fixed;
-			top: 0;
-			left: 0;
-			right: 0;
-		}
+        &.is-sticky {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+        }
 
-		ul {
-			list-style-type: none;
-		}
+        ul {
+            list-style-type: none;
+        }
 
-		li {
-			&.is-active {
-				background-color: green;
-			}
-		}
+        li {
+            &.is-active {
+                background-color: green;
+            }
+        }
 
-		&,
-		a {
-			color: white;
-		}
+        &,
+        a {
+            color: white;
+        }
 
-		a {
-			display: inline-block;
-			padding: .5em 0;
-			margin: .5em 0;
-		}
+        a {
+            display: inline-block;
+            padding: .5em 0;
+            margin: .5em 0;
+        }
 
-		@media (min-width: 720px) {
-			p {
-				display: none;
-			}
+        @media (min-width: 720px) {
+            p {
+                display: none;
+            }
 
-			ul {
-				&:after {
-					content: '';
-					display: table;
-					clear: both;
-				}
-			}
+            ul {
+                &:after {
+                    content: '';
+                    display: table;
+                    clear: both;
+                }
+            }
 
-			li {
-				display: block;
-				float: left;
+            li {
+                display: block;
+                float: left;
 
-				&:before {
-					content: '|';
-				}
+                &:before {
+                    content: '|';
+                }
 
-				&:first-child:before {
-					content: '';
-				}
-			}
+                &:first-child:before {
+                    content: '';
+                }
+            }
 
-			a {
-				padding: 1em 2em;
-				margin: 0 1em;
-			}
-		}
-	}
+            a {
+                padding: 1em 2em;
+                margin: 0 1em;
+            }
+        }
+    }
 }

@@ -1,5 +1,6 @@
 /*! matchMedia() polyfill - Test a CSS media type/query in JS. Authors & copyright (c) 2012: Scott Jehl, Paul Irish, Nicholas Zakas, David Knight. Dual MIT/BSD license */
-/* jshint ignore:start */
+
+/*eslint-disable */
 window.matchMedia || (window.matchMedia = function() {
     "use strict";
 
@@ -44,4 +45,4 @@ window.matchMedia || (window.matchMedia = function() {
         };
     };
 }());
-/* jshint ignore:end */
+/*eslint-enable */

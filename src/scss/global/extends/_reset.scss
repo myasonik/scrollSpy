@@ -1,19 +1,19 @@
 %reset-basic {
-	border: none;
-	background: none;
-	-moz-appearance: none;
-	-webkit-appearance: none;
-	appearance: none;
-	cursor: pointer;
+    border: none;
+    background: none;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    appearance: none;
+    cursor: pointer;
 }
 
 %reset-select {
-	@extend %reset-basic;
-	text-overflow: '';
-	border-radius: 0;
-	text-indent: 0.01px;
+    @extend %reset-basic;
+    text-overflow: '';
+    border-radius: 0;
+    text-indent: 0.01px;
 }
 
 %reset-button {
-	@extend %reset-basic;
+    @extend %reset-basic;
 }

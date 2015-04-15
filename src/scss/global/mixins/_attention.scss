@@ -1,17 +1,17 @@
 // When an element gets some 'attention'
 @mixin attention($active-class: '') {
-	@if $active-class != '' {
-		&.#{$active-class},
-		&:hover,
-		&:active,
-		&:focus {
-			@content;
-		}
-	} @else {
-		&:hover,
-		&:active,
-		&:focus {
-			@content;
-		}
-	}
+    @if $active-class != '' {
+        &.#{$active-class},
+        &:hover,
+        &:active,
+        &:focus {
+            @content;
+        }
+    } @else {
+        &:hover,
+        &:active,
+        &:focus {
+            @content;
+        }
+    }
 }

@@ -1,19 +1,19 @@
 @function z($index) {
-	@if not map-has-key($z-index, $index) {
-		@error 'No index found for `#{$index}` in $z-indexs map.';
-	} @else {
-		@return map-get($z-index, $index);
-	}
-	@error 'Unexpected error.';
+    @if not map-has-key($z-index, $index) {
+        @error 'No index found for `#{$index}` in $z-indexs map.';
+    } @else {
+        @return map-get($z-index, $index);
+    }
+    @error 'Unexpected error.';
 }
 
 @function palette($palette, $tone: 'base') {
-	@if not map-has-key($palettes, $palette) {
-		@error 'No palette found for `#{$palette}` in $palettes map.';
-	} @else if not map-has-key(map-get($palettes, $palette), $tone) {
-		@error 'No color tone found for `#{$tone}` in $palettes.#{$palette} map.';
-	} @else {
-		@return map-get(map-get($palettes, $palette), $tone);
-	}
-	@error 'Unexpected error.';
+    @if not map-has-key($palettes, $palette) {
+        @error 'No palette found for `#{$palette}` in $palettes map.';
+    } @else if not map-has-key(map-get($palettes, $palette), $tone) {
+        @error 'No color tone found for `#{$tone}` in $palettes.#{$palette} map.';
+    } @else {
+        @return map-get(map-get($palettes, $palette), $tone);
+    }
+    @error 'Unexpected error.';
 }

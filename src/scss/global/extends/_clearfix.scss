@@ -8,9 +8,9 @@
  *    `:before` to contain the top-margins of child elements.
  */
  %cf {
-	&:after {
-		content: ' '; /* 1 */
-		display: table; /* 2 */
-		clear: both;
-	}
+    &:after {
+        content: ' '; /* 1 */
+        display: table; /* 2 */
+        clear: both;
+    }
  }
