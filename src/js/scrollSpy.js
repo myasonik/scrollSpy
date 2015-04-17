@@ -1,5 +1,6 @@
 const $ = require('jquery');
 const historyTest = require('./historyTest');
+const assign = require('lodash.assign');
 const origin = window.location.origin || `${window.location.protocol}//${window.location.host}`;
 
 const DEFAULTS = {
@@ -22,7 +23,7 @@ const get$ = (obj) => obj instanceof $ ? obj : $(obj);
 const checkDisable = (val) => (typeof val === 'boolean' && !val) || (typeof val === 'string' && window.matchMedia(val).matches);
 
 module.exports = function scrollSpy(options) {
-    const OPTS = Object.assign({}, DEFAULTS, options);
+    const OPTS = assign({}, DEFAULTS, options);
     const STICKYNAV = OPTS.stickyNav;
     const STICKYCLASS = OPTS.stickyClass;
     const $NAV = get$(OPTS.nav);
@@ -61,7 +62,7 @@ module.exports = function scrollSpy(options) {
     };
 
     const scrollToAnchor = (HASH, $TARGET=$(HASH), SCROLL_OPTIONS) => {
-        const SCROLL_OPTS = Object.assign({}, SCROLL_DEFAULTS, SCROLL_OPTIONS);
+        const SCROLL_OPTS = assign({}, SCROLL_DEFAULTS, SCROLL_OPTIONS);
         const { DURATION, TEMP_NAV_HEIGHT } = SCROLL_OPTS;
 
         if (HASH === '#') scroll(0, DURATION);

@@ -9,13 +9,12 @@ A simple scroll spy
 * `gulp watch` will set-up watch, watchify, browser-sync
 * `gulp prod` will build the site with minified/uglified/optimized assets
 
-\* Sass is only there to build the demo page. You can remove it all if you like.
+\*Sass is only there to build the demo page. You can remove it all if you like.
 
 #### Example
 
 ```javascript
-require('babel/polyfill');
-// require('./matchMedia'); // only necessary if using a media query in options
+// require('./matchMedia'); // only necessary if using a media query in options & want deeper support
 
 scrollSpy({
 	nav: '#pageNav',
@@ -35,6 +34,7 @@ stickyNav | boolean | false | Do you want me to toggle the stickyClass when the 
 title | string or jQuery obj | null | Do you need to update something to the title of the link when it's the current position?
 disableScrollToAnchor | boolean or string | false | True will disable animated scrolls between anchors. A media query will disable it accordingly (Ex. `(min-width: 768px)`). Remember to use a matchMedia polyfill if you need that support.
 disableScrollSpy | boolean or string | false | True will basically disable the whole point of this thing. The string is a media query, refer to above.
+
 
 #### Callbacks
 Name | Params | Description
