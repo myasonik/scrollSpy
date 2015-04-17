@@ -15,7 +15,7 @@
 
         // best practice
         "block-scoped-var": 2,
-        "curly": [2, "multi"],
+        "curly": [2, "multi-line"],
         "default-case": 2,
         "guard-for-in": 2,
         "no-alert": 1,
@@ -42,7 +42,7 @@
 
         // style
         "indent": 2,
-        "brace-style": [2, "1tbs", {"allowSingleLine": true}],
+        "brace-style": [1, "1tbs", {"allowSingleLine": true}], // left as warning due to bug# 1739
         "comma-style": [2, "last"],
         "consistent-this": [2, "self"],
         "no-lonely-if": 2,

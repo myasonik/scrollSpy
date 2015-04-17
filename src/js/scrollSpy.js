@@ -102,7 +102,6 @@ module.exports = function scrollSpy(options) {
             const HASH = getHash($EL.attr('href'));
             const $SCROLLTARGET = $(HASH);
 
-
             if ($SCROLLTARGET.length) {
                 if (STICKYNAV && !isSticky) scrollToAnchor(HASH, $SCROLLTARGET, {TEMP_NAV_HEIGHT: $NAV.height()});
                 else scrollToAnchor(HASH, $SCROLLTARGET);
