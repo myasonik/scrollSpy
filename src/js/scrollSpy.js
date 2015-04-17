@@ -1,8 +1,9 @@
 const $ = require('jquery');
-const historyTest = require('./historyTest');
 const assign = require('lodash.assign');
-const origin = window.location.origin || `${window.location.protocol}//${window.location.host}`;
 
+const historyTest = require('./historyTest');
+
+const origin = window.location.origin || `${window.location.protocol}//${window.location.host}`;
 const DEFAULTS = {
     nav: null,
     navLinks: '[href^="#"]',
@@ -14,129 +15,124 @@ const DEFAULTS = {
     disableScrollToAnchor: false,
     disableScrollSpy: false,
     onScrollCb: null,
-    onChangeCb: null
+    onChangeCb: null,
+    classOn: ['a']
 };
 
 const getHash = (url) => url.startsWith('#') ? url : '#' + url.split('#')[1];
 const get$ = (obj) => obj instanceof $ ? obj : $(obj);
-
 const checkDisable = (val) => (typeof val === 'boolean' && !val) || (typeof val === 'string' && window.matchMedia(val).matches);
+const getNavPoint = (link) => {
+    const point = $(getHash($(link).attr('href')));
+    if (point.length) return point;
+};
+const updateHash = (hash = `${origin}${window.location.pathname}`) => {
+    if (historyTest) history.replaceState(null, null, hash);
+    else if (hash.startsWith('#')) window.location.hash = hash.split('#')[1];
+    else window.location.hash = '';
+};
 
 module.exports = function scrollSpy(options) {
-    const OPTS = assign({}, DEFAULTS, options);
-    const STICKYNAV = OPTS.stickyNav;
-    const STICKYCLASS = OPTS.stickyClass;
-    const $NAV = get$(OPTS.nav);
-    const $NAVLINKS = $NAV.find(OPTS.navLinks);
-    const ACTIVECLASS = OPTS.activeClass;
-    const $TITLE = get$(OPTS.title);
-    const DEFAULT_TITLE = $TITLE.length && $TITLE.text();
-    const $SCROLL = $('html, body');
-    const $WINDOW = $(window);
-    const $NAVPOINTS = $NAVLINKS.map(() => {
-        const POINT = $(getHash($(this).attr('href')));
-        if (POINT.length) return POINT;
-    });
-    const DISABLE_SCROLL_TO_ANCHOR = OPTS.disableScrollToAnchor;
-    const { onScrollCb, onChangeCb, onClickCb } = OPTS;
+    const opts = assign({}, DEFAULTS, options);
+    const { stickyNav, stickyClass, activeClass, disableScrollToAnchor, onScrollCb, onChangeCb, onClickCb } = opts;
+    const $nav = get$(opts.nav);
+    const $navLinks = $nav.find(opts.navLinks);
+    const $title = get$(opts.title);
+    const $scroll = $('html, body');
+    const $window = $(window);
+    const $navPoints = $navLinks.map(getNavPoint);
+
+    const DEFAULT_TITLE = $title.length && $title.text();
     const SCROLL_DEFAULTS = {
-        TEMP_NAV_HEIGHT: null,
-        DURATION: OPTS.scrollDuration
+        tempNavHeight: null,
+        duration: opts.scrollDuration
     };
 
-    let NAVOFFSET;
-    let navHeight; // allow changes of height on window resize or scroll
-    let isSticky = options.stickyNav ? false : ($NAV.css('position') === 'fixed');
+    // TODO check for resize on scroll
+    let navOffset;
+    let navHeight;
+    let isSticky = options.stickyNav ? false : ($nav.css('position') === 'fixed');
     let lastId;
 
-    const updateHash = (HASH = `${origin}${window.location.pathname}`) => {
-        if (historyTest) history.replaceState(null, null, HASH);
-        else if (HASH.startsWith('#')) window.location.hash = HASH.split('#')[1];
-        else window.location.hash = '';
-    };
+    const scroll = (location, duration) => $scroll.stop().animate({scrollTop: location}, duration);
 
-    const scroll = (LOCATION, DURATION) => {
-        $SCROLL.stop().animate({
-            scrollTop: LOCATION
-        }, DURATION);
-    };
+    const scrollToAnchor = (hash, $target=$(hash), scrollOptions) => {
+        const scrollOpts = assign({}, SCROLL_DEFAULTS, scrollOptions);
+        const { duration, tempNavHeight } = scrollOpts;
 
-    const scrollToAnchor = (HASH, $TARGET=$(HASH), SCROLL_OPTIONS) => {
-        const SCROLL_OPTS = assign({}, SCROLL_DEFAULTS, SCROLL_OPTIONS);
-        const { DURATION, TEMP_NAV_HEIGHT } = SCROLL_OPTS;
-
-        if (HASH === '#') scroll(0, DURATION);
+        if (hash === '#') scroll(0, duration);
         else {
-            let destinationScroll = (1 + $TARGET.offset().top);
-            destinationScroll -= TEMP_NAV_HEIGHT || navHeight;
+            let destinationScroll = (1 + $target.offset().top);
+            destinationScroll -= tempNavHeight || navHeight;
 
-            if (STICKYNAV) {
+            if (stickyNav) {
                 if (!isSticky) destinationScroll -= navHeight;
-                if (NAVOFFSET > destinationScroll) destinationScroll += navHeight;
+                if (navOffset > destinationScroll) destinationScroll += navHeight;
             }
 
-            scroll(destinationScroll, DURATION);
+            scroll(destinationScroll, duration);
         }
 
-        updateHash(HASH);
+        updateHash(hash);
     };
 
     const cb = (callBack, ...params) => {
         if (callBack) callBack(...params);
-        navHeight = $NAV.height();
+        navHeight = $nav.height();
     };
 
     $(function $ready() {
-        const HASH = window.location.hash;
+        const hash = window.location.hash;
 
-        NAVOFFSET = STICKYNAV ? $NAV.offset().top : null;
-        navHeight = $NAV.height();
+        navOffset = stickyNav ? $nav.offset().top : null;
+        navHeight = $nav.height();
 
-        if (HASH && navHeight !== 0) scrollToAnchor(HASH, $(HASH), {DURATION: 0});
+        if (hash && navHeight !== 0) scrollToAnchor(hash, $(hash), {duration: 0});
     });
 
-    $NAV.on('click', OPTS.navLinks, function navLinkClick(e) {
-        const NOT_DISABLED = checkDisable(DISABLE_SCROLL_TO_ANCHOR);
-        const $EL = $(this);
+    $nav.on('click', opts.navLinks, function navLinkClick(e) {
+        const notDisabled = checkDisable(disableScrollToAnchor);
+        const $el = $(this);
 
-        if (NOT_DISABLED) {
-            const HASH = getHash($EL.attr('href'));
-            const $SCROLLTARGET = $(HASH);
+        if (notDisabled) {
+            const hash = getHash($el.attr('href'));
+            const $target = $(hash);
 
-            if ($SCROLLTARGET.length) {
-                if (STICKYNAV && !isSticky) scrollToAnchor(HASH, $SCROLLTARGET, {TEMP_NAV_HEIGHT: $NAV.height()});
-                else scrollToAnchor(HASH, $SCROLLTARGET);
+            if ($target.length) {
+                if (stickyNav && !isSticky) scrollToAnchor(hash, $target, {tempNavHeight: $nav.height()});
+                else scrollToAnchor(hash, $target);
             }
+
             e.preventDefault();
         }
 
-        cb(onClickCb, $EL, !NOT_DISABLED);
+        cb(onClickCb, $el, !notDisabled);
     });
 
-    $WINDOW.resize(() => navHeight = $($NAV).height());
+    $window.resize(() => navHeight = $nav.height());
 
-    $WINDOW.scroll(function onWindowScroll() {
-        if (checkDisable(OPTS.disableScrollSpy)) {
-            const SCROLL = $WINDOW.scrollTop();
-            let $cur, id;
+    $window.scroll(function onWindowScroll() {
+        if (checkDisable(opts.disableScrollSpy)) {
+            const scroll = $window.scrollTop();
+            let $cur, id, viewable;
 
-            if (STICKYNAV) {
-                // optimize to not do this all the time
-                if (SCROLL >= NAVOFFSET) {
-                    $NAV.addClass(STICKYCLASS);
+            if (stickyNav) {
+                // maybe todo: optimize to not do this all the time
+                if (scroll >= navOffset) {
+                    $nav.addClass(stickyClass);
                     isSticky = true;
                 } else {
-                    $NAV.removeClass(STICKYCLASS);
+                    $nav.removeClass(stickyClass);
                     isSticky = false;
                 }
-                navHeight = $NAV.height();
+                navHeight = $nav.height();
             }
 
-            const VIEWABLETOP = isSticky ? (SCROLL + navHeight) : SCROLL;
+            viewable = isSticky ? (scroll + navHeight) : scroll;
 
-            for (let i = $NAVPOINTS.length-1; i > -1; i--) {
-                if ($NAVPOINTS[i].offset().top < VIEWABLETOP) {
-                    $cur = $NAVPOINTS[i];
+            for (let i = $navPoints.length-1; i > -1; i--) {
+                if ($navPoints[i].offset().top < viewable) {
+                    $cur = $navPoints[i];
                     i = -1;
                 }
             }
@@ -145,19 +141,21 @@ module.exports = function scrollSpy(options) {
 
             if (lastId !== id) {
                 lastId = id;
+                // todo: give target a class
 
                 if (id === '') {
-                    $NAVLINKS.parent().removeClass(ACTIVECLASS);
+                    $navLinks.parent().removeClass(activeClass);
                     updateHash();
-                    if ($TITLE.length) $TITLE.text(DEFAULT_TITLE);
+                    if ($title.length) $title.text(DEFAULT_TITLE);
                 } else {
-                    $NAVLINKS.parent()
-                        .removeClass(ACTIVECLASS)
-                        .find(`[href*=#${id}]`).parent().addClass(ACTIVECLASS);
+                    // todo: cache child variables
+                    $navLinks.parent()
+                        .removeClass(activeClass)
+                        .find(`[href*=#${id}]`).parent().addClass(activeClass);
 
                     updateHash(`#${id}`);
 
-                    if ($TITLE.length) $TITLE.text($NAVLINKS.filter(`[href*=#${id}]`).text());
+                    if ($title.length) $title.text($navLinks.filter(`[href*=#${id}]`).text());
                 }
 
                 cb(onChangeCb, lastId, id, scroll, navHeight);
